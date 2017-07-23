@@ -1,0 +1,53 @@
+06-25 18:55:43 jdbc[8]: exception
+org.h2.jdbc.JdbcSQLException: Table "PLAY_EVOLUTIONS" not found; SQL statement:
+select id, hash, apply_script, revert_script, state, last_problem from play_evolutions where state like 'applying_%' [42102-175]
+2017-07-02 12:40:32 database: wrong user or password; user: "SA"
+org.h2.message.DbException: Wrong user name or password [28000-193]
+	at org.h2.message.DbException.get(DbException.java:179)
+	at org.h2.message.DbException.get(DbException.java:155)
+	at org.h2.message.DbException.get(DbException.java:144)
+	at org.h2.engine.Engine.openSession(Engine.java:104)
+	at org.h2.engine.Engine.openSession(Engine.java:176)
+	at org.h2.engine.Engine.createSessionAndValidate(Engine.java:154)
+	at org.h2.engine.Engine.createSession(Engine.java:137)
+	at org.h2.engine.Engine.createSession(Engine.java:27)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:349)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:115)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:99)
+	at org.h2.Driver.connect(Driver.java:69)
+	at org.h2.server.web.WebServer.getConnection(WebServer.java:735)
+	at org.h2.server.web.WebApp.login(WebApp.java:947)
+	at org.h2.server.web.WebApp.process(WebApp.java:210)
+	at org.h2.server.web.WebApp.processRequest(WebApp.java:169)
+	at org.h2.server.web.WebThread.process(WebThread.java:133)
+	at org.h2.server.web.WebThread.run(WebThread.java:89)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: org.h2.jdbc.JdbcSQLException: Wrong user name or password [28000-193]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	... 19 more
+2017-07-15 09:52:08 database: close
+org.h2.message.DbException: Eingabe/Ausgabe: "java.io.IOException: Das Gerät ist nicht bereit"; "E:/FHS/R_D/NetBeansProjects/gateway2db/gateway2db.h2.db"
+IO Exception: "java.io.IOException: Das Gerät ist nicht bereit"; "E:/FHS/R_D/NetBeansProjects/gateway2db/gateway2db.h2.db" [90031-192]
+	at org.h2.message.DbException.get(DbException.java:168)
+	at org.h2.message.DbException.convertIOException(DbException.java:330)
+	at org.h2.store.FileStore.write(FileStore.java:331)
+	at org.h2.store.PageStore.writePage(PageStore.java:1368)
+	at org.h2.store.PageStreamData.write(PageStreamData.java:106)
+	at org.h2.store.PageOutputStream.storePage(PageOutputStream.java:147)
+	at org.h2.store.PageOutputStream.flush(PageOutputStream.java:155)
+	at org.h2.store.PageLog.checkpoint(PageLog.java:697)
+	at org.h2.store.PageStore.checkpoint(PageStore.java:435)
+	at org.h2.engine.Database.closeOpenFilesAndUnlock(Database.java:1359)
+	at org.h2.engine.Database.close(Database.java:1292)
+	at org.h2.engine.DatabaseCloser.run(DatabaseCloser.java:63)
+Caused by: org.h2.jdbc.JdbcSQLException: Eingabe/Ausgabe: "java.io.IOException: Das Gerät ist nicht bereit"; "E:/FHS/R_D/NetBeansProjects/gateway2db/gateway2db.h2.db"
+IO Exception: "java.io.IOException: Das Gerät ist nicht bereit"; "E:/FHS/R_D/NetBeansProjects/gateway2db/gateway2db.h2.db" [90031-192]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:345)
+	... 12 more
+Caused by: java.io.IOException: Das Gerät ist nicht bereit
+	at java.io.RandomAccessFile.writeBytes(Native Method)
+	at java.io.RandomAccessFile.write(Unknown Source)
+	at org.h2.store.fs.FileDisk.write(FilePathDisk.java:484)
+	at org.h2.store.fs.FileUtils.writeFully(FileUtils.java:372)
+	at org.h2.store.FileStore.write(FileStore.java:328)
+	... 9 more
