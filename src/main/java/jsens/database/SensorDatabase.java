@@ -16,11 +16,13 @@
 
 package jsens.database;
 
-import com.mycompany.sensorrest.SensorNode;
+import com.RDFHSalzburg.sensorrest.SensorNode;
 import jsens.Preconf;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -164,6 +166,25 @@ public class SensorDatabase {
 
         return rs;
     }
+    
+    public synchronized SensorNode getSensorNode(int SensID) throws SQLException {
+        //FIXME SREI SQL INJECTION!!!
+        String query = "select * from sensornodes where idsensornode=?";
+
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setInt(1, SensID);
+        ResultSet rs = ps.executeQuery();
+        logger.debug("Query: " + query);
+        SensorNode tempNode = null;
+        
+        while (rs.next()) {
+            tempNode = new SensorNode(rs);
+        }
+        
+        return tempNode;
+    }
+    
+    
 
     public synchronized int updateSensorMeasurement(String setString, String whereString) throws SQLException {
         //FIXME SREI SQL INJECTION!!!
@@ -203,6 +224,41 @@ public class SensorDatabase {
         return count;
     }
     
+    public synchronized int getSensorMeasurementsFalseCount()  throws SQLException{
+        String whereStr = "SELECT COUNT(*) AS rowcount FROM sensormeasurements WHERE SOSTRANSMITTED = FALSE";
+        
+        Statement st = conn.createStatement();
+        ResultSet rs;
+        logger.debug("Query: " + whereStr);
+        rs = st.executeQuery(whereStr);
+        
+        rs.next();
+        int count = rs.getInt("rowcount");
+        rs.close();
+        
+        return count;
+    }
+    
+    public synchronized String getLastRecordDate() throws SQLException{
+        String query = "SELECT * FROM SENSORMEASUREMENTS ORDER BY IDSENSORMEASUREMENT DESC LIMIT 1";
+        
+        Statement st = conn.createStatement();
+        ResultSet rs;
+        logger.debug("Query: " + query);
+        rs = st.executeQuery(query);
+        
+        rs.next();
+        String date = rs.getString("MEASTIME");
+        
+        DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        LocalDateTime dateTime = LocalDateTime.from(f.parse(date));
+        
+        rs.close();
+        return dateTime.toString();
+        
+        //return date.toInstant().toString();
+    }
+    
     public synchronized List<SensorNode> getAllSensors() throws SQLException {
         
         List<SensorNode> nodeList = new ArrayList<>();
@@ -220,6 +276,25 @@ public class SensorDatabase {
         }
         
         return nodeList;
+    }
+    
+    public synchronized int getActiveNodeCount(int timeoutMinutes) throws SQLException {
+        String query = "SELECT COUNT(DISTINCT SENSORNODES_IDSENSORNODE) AS count FROM SENSORMEASUREMENTS WHERE MEASTIME > DATEADD(minute,?, NOW())";
+        //"SELECT COUNT(*) AS rowcount FROM SENSORMEASUREMENTS WHERE SENSORNODES_IDSENSORNODE = 6 and MEASTIME > DATEADD(minute,30, NOW())";
+        
+
+        ResultSet rs;
+        logger.debug("Query: " + query);
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setInt(1, timeoutMinutes);
+
+        rs = ps.executeQuery();
+        
+        rs.next();
+        int count = rs.getInt("count");
+        rs.close();
+        
+        return count;
     }
     
     public synchronized boolean insertSensorNode(String ExtendedAddress, String Name, String Description, float Latitude, float Longitude, float Altitude)
