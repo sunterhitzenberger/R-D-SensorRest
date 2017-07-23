@@ -1,4 +1,5 @@
 cd ../R-D-Frontend\code
+REM call npm install
 call npm run build:dll
 call npm run start:dev-server
 cd ../../\R-D-SensorRest
