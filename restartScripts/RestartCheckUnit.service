@@ -1,0 +1,10 @@
+[Unit]
+Description=Unit for restart check
+
+[Service]
+ExecStart=./restartScripts/restartDatabase
+ExecStart=./restartScripts/restartGateway
+ExecStart=./restartScripts/restartSystem
+
+[Install]
+WantedBy=multi-user.target

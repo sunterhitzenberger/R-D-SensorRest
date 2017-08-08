@@ -1,0 +1,10 @@
+[Unit]
+Description=Timer for restart check unit
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=30s
+Unit=RestartUnit.service
+
+[Install]
+WantedBy=multi-user.target

@@ -8,8 +8,10 @@ import com.RDFHSalzburg.JsonMarshaller.JsonSensorNode;
 import static com.RDFHSalzburg.sensorrest.InternetAvailabilityChecker.pingIP;
 import com.google.gson.Gson;
 import com.sun.management.OperatingSystemMXBean;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.sql.SQLException;
@@ -36,13 +38,11 @@ import static spark.Spark.*;
 public class MainClass {
     static int cpuUsagePrev = -1;
     static int memoryUsagePrev = -1;
-    private static final Logger logger =  LogManager.getLogger(MainClass.class);   
+    private static final Logger LOGGER =  LogManager.getLogger(MainClass.class);   
     private static SosConnectThread connectThread;
 
     private static void initTestSetup(String workingDirPath){
-        //File RestartDB = new File (workingDirPath);
-        File startProgramms = new File(workingDirPath);
-        //startProgramms.e
+        // restart the DB
     }
     
     public static void main(String[] args) {
@@ -61,7 +61,7 @@ public class MainClass {
         nodeList.add(new SensorNode("Hello World", "aaa"));
         nodeList.add(new SensorNode("Hello World", "55"));
         nodeList.add(new SensorNode("Hello World", "44"));
-
+        
         //startSosThread();
 
         //get("/hello", (request, response) -> new SensorNode("Hello World", "aaa"), gson::toJson);
@@ -107,6 +107,8 @@ public class MainClass {
             int memoryUsage = (int)osBean.getFreePhysicalMemorySize() / mb ;
             int memoryUsageOld = memoryUsagePrev;
             memoryUsagePrev = memoryUsageOld;
+            
+            //int storageUsage = (int)osBean.
             
             response.header("Access-Control-Allow-Origin", "*");
             return "{\n" + "\"system\":{\n" +
@@ -223,14 +225,43 @@ public class MainClass {
         });
         
         get("/restartGateway", (request, response) -> {
-            
+            LOGGER.debug("start process: restartGateway");
             response.header("Access-Control-Allow-Origin", "*");
+            
+            createFile("/RestartGateway");
+            
+            return "empty";
+        });
+        
+        get("/restartDatabase", (request, response) -> {
+            LOGGER.debug("start process: restartDatabase");
+            response.header("Access-Control-Allow-Origin", "*");
+            
+            createFile("/RestartDatabase");
+            
+            return "empty";
+        });
+        
+        get("/restartSystem", (request, response) -> {
+            LOGGER.debug("start process: restartSystem");
+            response.header("Access-Control-Allow-Origin", "*");
+            
+            createFile("/RestartSystem");
+            
             return "empty";
         });
     }
     
     private static String getLog(LoggerContext context){
         return getLog(context, 500);
+    }
+    
+    private static void createFile(String path) throws IOException
+    {
+        File f = new File(path);
+
+        f.getParentFile().mkdirs(); 
+        f.createNewFile();
     }
     
     private static String getLog(LoggerContext context, int limit){
@@ -246,10 +277,11 @@ public class MainClass {
                 {
                     logLineList.add(line);
                 }
+                reverseReader.close();
             }
             catch(IOException ioe)
             {
-                logger.error(ioe.getStackTrace());
+                LOGGER.error(ioe.getStackTrace());
             }
             
             // revert list to get the original line direction
@@ -267,18 +299,18 @@ public class MainClass {
     private static String startSosThread() {
         try {
             if (connectThread ==  null || connectThread.getState()==Thread.State.TERMINATED){
-                logger.info("initialize sosConnectThread");
+                LOGGER.info("initialize sosConnectThread");
                 connectThread = new SosConnectThread(false);
                 connectThread.setName("Sos Thread");
             }
             if (connectThread.getState() == Thread.State.NEW || connectThread.getState() == Thread.State.WAITING)
             {
-                logger.info("Starting SOS thread");
+                LOGGER.info("Starting SOS thread");
                 connectThread.start();
                 return "upload started";
             }
             else{
-                logger.error("sosConnectThread is not in a startable state");
+                LOGGER.error("sosConnectThread is not in a startable state");
                 return "upload not started";
             }
         } catch (SQLException ex) {

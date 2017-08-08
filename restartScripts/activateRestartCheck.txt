@@ -1,0 +1,8 @@
+# change path of the checked files in the RestartCheckUnit.service file to the location of the application
+
+# copy timer and service file to:
+/etc/systemd/system
+
+# run following commands:
+sudo systemctl enable RestartCheckUnit.timer
+sudo systemctl start RestartCheckUnit.timer

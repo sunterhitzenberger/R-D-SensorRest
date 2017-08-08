@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="debug" strict="flase">
+<Configuration status="debug" strict="false">
 	<Appenders>
 		<File name="backendWrapper" fileName="backendWrapper.log" bufferedIO="false" advertise="true">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
@@ -9,7 +9,7 @@
     </Console-->
 	</Appenders>
 	<Loggers>
-		<Logger name="com.mycompany.sensorrest" level="debug">
+		<Logger name="com.RDFHSalzburg.sensorrest" level="debug">
 			<AppenderRef ref="backendWrapper"/>
 		</Logger>
 	</Loggers>
